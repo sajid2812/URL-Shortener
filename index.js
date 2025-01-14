@@ -1,6 +1,8 @@
 const express = require("express");
 const { connectToMongoDB } = require("./connect");
 const path = require("path");
+const cookieParser = require("cookie-parser");
+const { restrictToLoggedInUserOnly } = require("./middlewares/auth.middleware");
 
 const app = express();
 const PORT = 3000;
@@ -26,8 +28,9 @@ app.get("/test", async (req, res) => {
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use("/", staticRoute);
-app.use("/url", urlRoute);
+app.use("/url", restrictToLoggedInUserOnly, urlRoute);
 app.use("/user", userRoute);
 
 app.listen(PORT, () => {
